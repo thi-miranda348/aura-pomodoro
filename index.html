@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="styles.css" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-    <<script
+    <script
         src="https://cdn.jsdelivr.net/npm/@tsparticles/preset-triangles@3/tsparticles.preset.triangles.bundle.min.js">
         </script>
 
@@ -98,9 +98,9 @@
 
             <div class="timer-card glass-card">
                 <div class="timer-tabs">
-                    <button type="button" class="btn btn-tab active">Focus</button>
-                    <button type="button" class="btn btn-tab">Short Break</button>
-                    <button type="button" class="btn btn-tab">Long Break</button>
+                    <button type="button" class="btn btn-tab active" data-mode="focus">Focus</button>
+                    <button type="button" class="btn btn-tab" data-mode="shortBreak">Short Break</button>
+                    <button type="button" class="btn btn-tab" data-mode="longBreak">Long Break</button>
                 </div>
 
                 <div class="timer-display">
@@ -109,14 +109,14 @@
                 </div>
 
                 <div class="timer-controls">
-                    <button type="button" class="btn-icon" aria-label="Reset Timer">
+                    <button type="button" class="btn-reset" aria-label="Reset Timer">
                         <span class="material-symbols-outlined">refresh</span>
                     </button>
                     <button type="button" class="btn-play" aria-label="Play Timer">
                         <span class="material-symbols-outlined">play_arrow</span>
                     </button>
-                    <button type="button" class="btn-icon" aria-label="Skip Session">
-                        <span class="material-symbols-outlined">pause</span>
+                    <button type="button" class="btn-skip" aria-label="Skip Session">
+                        <span class="material-symbols-outlined">skip_next</span>
                     </button>
                 </div>
             </div>

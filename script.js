@@ -43,18 +43,18 @@ class AudioMixer {
       })
 
       // Lofi click event
-      
+
     })
 
     if (this.lofiToggelCard && this.lofiAudio) {
-        this.lofiToggelCard.addEventListener('click', () => {
-          this.toggleLofi();
-        }
-        ) 
-        this.lofiAudio.addEventListener('ended', () => {
-          this.playNextLofiTrack();
-        })
+      this.lofiToggelCard.addEventListener('click', () => {
+        this.toggleLofi();
       }
+      )
+      this.lofiAudio.addEventListener('ended', () => {
+        this.playNextLofiTrack();
+      })
+    }
   }
 
 
@@ -79,7 +79,7 @@ class AudioMixer {
     audioEl.volume = volumeValue / 100;
 
     // Pause logic
-    if (volumeValue === 0 ) {
+    if (volumeValue === 0) {
       audioEl.pause();
     } else {
       if (audioEl.paused) {
@@ -94,7 +94,7 @@ class AudioMixer {
   playNextLofiTrack() {
     this.currentTrackIndex++;
 
-    if(this.currentTrackIndex >= this.lofiPlaylist.length) {
+    if (this.currentTrackIndex >= this.lofiPlaylist.length) {
       this.currentTrackIndex = 0;
     }
 
@@ -120,7 +120,7 @@ class AudioMixer {
 
       this.lofiAudio.play().then(() => {
         this.lofiIcon.textContent = 'pause';
-        
+
       }).catch(error => {
         console.log(`Waiting for user interaction to click`);
       })
@@ -131,12 +131,161 @@ class AudioMixer {
     }
   }
 
-  
+
 }
+
+
+class Timer {
+  constructor() {
+
+    // set up the core state
+    this.modes = {
+      focus: 25 * 60,
+      shortBreak: 5 * 60,
+      longBreak: 15 * 60
+    }
+
+    this.currentMode = 'focus';
+    this.timeLeft = this.modes[this.currentMode];
+    this.timeInterval = null;
+
+    this.isRunning = false;
+
+    // DOM
+    this.tabs = document.querySelectorAll('.btn-tab');
+    this.displayTime = document.querySelector('.time-huge');
+    this.displaySubtitle = document.querySelector('.timer-subtitle');
+    this.btnReset = document.querySelector('.btn-reset');
+    this.btnPlay = document.querySelector('.btn-play');
+    this.btnSkip = document.querySelector('.btn-skip');
+    this.btnPlayIcon = this.btnPlay.querySelector('.material-symbols-outlined');
+
+
+    this.init();
+  }
+
+  init() {
+    this.btnPlay.addEventListener('click', () => {
+      this.toggleTimer();
+    })
+    this.btnReset.addEventListener('click', () => {
+      this.resetTimer();
+    })
+    this.btnSkip.addEventListener('click', () => {
+      this.skipSession();
+    })
+
+
+    // mode tabs 
+    this.tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const selectedMode = tab.dataset.mode;
+        this.switchMode(selectedMode, tab);
+      })
+    })
+
+    this.updateDisplay();
+  }
+
+  toggleTimer() {
+    if (this.isRunning) {
+      this.pauseTimer();
+    } else {
+      this.startTimer();
+    }
+  }
+
+  startTimer() {
+    this.isRunning = true;
+    this.btnPlayIcon.textContent = 'pause';
+    this.btnPlay.style.transform = 'scale(1)';
+
+    this.timerInterval = setInterval(() => {
+      this.timeLeft--;
+      this.updateDisplay();
+
+      if (this.timeLeft <= 0) {
+        this.completeSession();
+      }
+    }, 1000);
+  }
+
+  pauseTimer() {
+    this.isRunning = false;
+    this.btnPlayIcon.textContent = 'play_arrow';
+    this.btnPlay.style.transform = 'scale(1)';
+    clearInterval(this.timerInterval);
+  }
+
+  resetTimer() {
+    this.pauseTimer();
+    this.timeLeft = this.modes[this.currentMode];
+    this.updateDisplay();
+  }
+
+
+  skipSession() {
+    if (this.currentMode === 'focus') {
+      this.switchMode('shortBreak', this.tabs[1]);
+    } else {
+      this.switchMode('focus', this.tabs[0]);
+    }
+  }
+
+  completeSession() {
+    this.pauseTimer();
+
+    // Notification later and update the progress logic
+    console.log(`Session ${this.currentMode} complete!`);
+
+    this.skipSession();
+
+  }
+
+  switchMode(mode, activeTabElement) {
+    this.pauseTimer();
+    this.currentMode = mode;
+    this.timeLeft = this.modes[this.currentMode];
+
+    this.tabs.forEach(tab => tab.classList.remove("active"));
+    activeTabElement.classList.add("active");
+
+
+    // update the subtitle
+    const subtitles = {
+      focus: 'STAY IN THE FLOW',
+      shortBreak: 'TAKE A BREATHER',
+      longBreak: 'STEP AWAY AND RECHARGE'
+    };
+
+    this.displaySubtitle.textContent = subtitles[this.currentMode];
+
+    this.updateDisplay();
+  }
+
+  updateDisplay() {
+    const minutes = Math.floor(this.timeLeft / 60);
+    const seconds = this.timeLeft % 60;
+
+    const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+    this.displayTime.textContent = formattedTime;
+
+    // display the time on the tab browser
+    const modelLabel = this.currentMode === 'focus' ? 'Focus' : 'Break';
+    document.title = `${formattedTime} - ${modelLabel} | Aura`;
+
+  }
+}
+
+
+
+
 
 document.addEventListener("DOMContentLoaded", async () => {
   // Initialize the audio logic
   const myMixer = new AudioMixer();
+  const myTimer = new Timer();
 
   // Initialize the particles logic
   await loadTrianglesPreset(tsParticles);
@@ -152,4 +301,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     },
   });
 });
- 
+
+
