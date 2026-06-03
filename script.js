@@ -385,6 +385,21 @@ class TaskManager {
       }
     });
 
+    // event Delegation for the Active Task Container
+    this.activeTaskContainer.addEventListener('click', (e) => {
+      // If they click the Checkmark button
+      const completeBtn = e.target.closest('.btn-complete-active');
+      if (completeBtn) {
+        this.completeTask(completeBtn.dataset.id);
+      }
+
+      // If they click the 'X' cancel button
+      const cancelBtn = e.target.closest('.btn-cancel-active');
+      if (cancelBtn) {
+        this.cancelActiveTask(cancelBtn.dataset.id);
+      }
+    });
+
     this.render();
   }
 
@@ -425,6 +440,15 @@ class TaskManager {
     const taskIndex = this.tasks.findIndex(task => task.id === id);
     if (taskIndex !== -1) {
       this.tasks[taskIndex].status = 'done';
+      this.saveTasks();
+      this.render();
+    }
+  }
+
+  cancelActiveTask(id) {
+    const taskIndex = this.tasks.findIndex(task => task.id === id);
+    if (taskIndex !== -1) {
+      this.tasks[taskIndex].status = 'pending';
       this.saveTasks();
       this.render();
     }
@@ -508,7 +532,23 @@ class TaskManager {
 
       if (task.status === 'active') {
         hasActiveTask = true;
-        this.activeTaskContainer.innerHTML = `<p>${task.text}</p>`;
+        this.activeTaskContainer.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div>
+                    <p style="margin: 0; font-weight: 600;">${task.text}</p>
+                    <span class="task-time text-muted" style="font-size: 0.85rem;">${task.time}</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-icon btn-cancel-active" data-id="${task.id}" style="width: 32px; height: 32px;" aria-label="Cancel Focus">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">close</span>
+                    </button>
+                    <button class="btn-icon btn-complete-active" data-id="${task.id}" style="width: 32px; height: 32px;" aria-label="Complete Focus Task">
+                        <span class="material-symbols-outlined" style="font-size: 20px; color: var(--primary-container);">check_circle</span>
+                    </button>
+                </div>
+            </div>
+        `;
+      
       }
 
       else if (task.status === 'pending') {
