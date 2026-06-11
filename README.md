@@ -24,6 +24,7 @@ A sleek, feature-rich Pomodoro timer application designed to help you stay in th
 - **Beautiful, Responsive UI**
     * Animated particle background powered by `tsParticles` for a calm, aesthetic environment.
     * Fully responsive design with a mobile-friendly menu drawer.
+<img width="2880" height="1784" alt="thi-miranda348 github io_aura-pomodoro_" src="https://github.com/user-attachments/assets/17040b7b-4574-4037-9acc-ae4c7c9ff55e" />
 
 ## Getting Started
 
